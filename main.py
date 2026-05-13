@@ -4,10 +4,8 @@ import time
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-# 1. Configuration
 model_path = 'hand_landmarker.task' 
 
-# Hardcoded connections so we never have to call mp.solutions again
 # This represents every line in the hand skeleton (Wrist to fingers, etc.)
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4),    # Thumb
@@ -18,7 +16,6 @@ HAND_CONNECTIONS = [
     (5, 9), (9, 13), (13, 17)          # Palm/Knuckles
 ]
 
-# 2. Setup the Landmarker Options
 BaseOptions = mp.tasks.BaseOptions
 HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
@@ -30,7 +27,6 @@ options = HandLandmarkerOptions(
     num_hands=2
 )
 
-# 3. Initialize the Detector and Webcam
 with HandLandmarker.create_from_options(options) as landmarker:
     cap = cv2.VideoCapture(0)
     print("Skeleton Hand Tracker Active! Press 'q' to quit.")
@@ -46,11 +42,11 @@ with HandLandmarker.create_from_options(options) as landmarker:
         frame_timestamp_ms = int(time.time() * 1000)
         detection_result = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
 
-        # 4. Drawing Logic
+        
         if detection_result.hand_landmarks:
             for hand_landmarks in detection_result.hand_landmarks:
                 
-                # Draw the lines using our hardcoded list
+                
                 for connection in HAND_CONNECTIONS:
                     start_lm = hand_landmarks[connection[0]]
                     end_lm = hand_landmarks[connection[1]]
@@ -60,7 +56,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
                     
                     cv2.line(frame, p1, p2, (255, 255, 255), 2)
 
-                # Draw the green dots
+                
                 for landmark in hand_landmarks:
                     x = int(landmark.x * frame.shape[1])
                     y = int(landmark.y * frame.shape[0])
